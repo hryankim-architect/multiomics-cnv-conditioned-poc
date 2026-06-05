@@ -1,0 +1,38 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Set up Python
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install deps
+        run: uv sync --extra dev
+
+      - name: Lint
+        run: uv run ruff check src scripts tests
+
+      - name: English-only / CJK scan
+        run: uv run python scripts/check_english_only.py
+
+      - name: Run tests
+        run: uv run pytest -q
+
+      - name: Run canary
+        run: uv run python -m mocnv.canary

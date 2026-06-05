@@ -1,5 +1,7 @@
 # `multiomics-cnv-conditioned-poc`
 
+![ci](https://github.com/hryankim-architect/multiomics-cnv-conditioned-poc/actions/workflows/ci.yml/badge.svg)
+
 > **One principle, applied here.** Pick the smallest representation that could carry the signal; measure it against an honest baseline; report the verdict faithfully — whether the added modality wins, ties, or loses. *Knowing whether a capability is real, rather than a flattering benchmark, is the point.*
 >
 > In this repo: **representation** a third, copy-number (CNV) pole-conditioned branch added to the DMOI RNA + methylation architecture → **baseline** the same model on RNA + methylation only → **verdict** a per-axis **modality ablation** — CNV is expected to help *amplicon-driven* axes (HER2 via the ERBB2 amplicon) and add little elsewhere. A null or axis-specific result is the honest deliverable.
