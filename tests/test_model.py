@@ -70,6 +70,19 @@ def test_ig_keys_on_her2_amplicon():
     assert top5 & set(POLE_HER2_CNV)   # a HER2 amplicon gene is among the top CNV attributions
 
 
+def test_gated_fusion_shapes_and_gate_sums_to_one():
+    s = synth.generate("HER2", seed=0, n=40)
+    dims = {"rna": s.rna.shape[1], "cnv": s.cnv.shape[1]}
+    inp = {"rna": torch.tensor(s.rna), "cnv": torch.tensor(s.cnv)}
+    m = MultiOmicsModel(dims, latent_dim=16, gated=True)
+    assert m(inp).shape == (40,)
+    gates = m.gate_weights(inp)
+    assert set(gates) == {"rna", "cnv"}
+    assert abs(sum(gates.values()) - 1.0) < 1e-4          # softmax over modalities
+    # ungated model (the v0.2-v0.4 default) exposes no gate
+    assert MultiOmicsModel(dims, latent_dim=16, gated=False).gate_weights(inp) is None
+
+
 def test_pos_weight_and_single_modality_sets_train():
     # v0.3/v0.4 path: class-weighted training + the RNA-only / CNV-only modality sets.
     s = synth.generate("HER2", seed=0, n=200)

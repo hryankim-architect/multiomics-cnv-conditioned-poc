@@ -46,6 +46,7 @@ def fit_model(
     weight_decay: float = 1e-4,
     seed: int = 0,
     pos_weight: bool = False,
+    gated: bool = False,
 ) -> MultiOmicsModel:
     """Build + train a MultiOmicsModel on the given modality set; return it.
 
@@ -53,10 +54,14 @@ def fit_model(
     when True, weight the positive class in BCE by n_neg/n_pos. This matters for
     the cross-cohort transfer, where the train cohort (TCGA HER2 ~13%) is imbalanced
     and an unweighted boundary transfers poorly across platforms.
+
+    ``gated`` (default False): use the input-conditioned softmax gate over modalities
+    (v0.5 (2)), so the model can down-weight an unhelpful modality instead of letting
+    a plain concat fusion dilute a strong one.
     """
     torch.manual_seed(seed)
     dims = {m: modality_arrays[m].shape[1] for m in modalities}
-    model = MultiOmicsModel(dims, latent_dim=latent_dim)
+    model = MultiOmicsModel(dims, latent_dim=latent_dim, gated=gated)
     tr = {m: _tensor(modality_arrays[m][train_idx]) for m in modalities}
     y_tr = _tensor(y[train_idx])
 

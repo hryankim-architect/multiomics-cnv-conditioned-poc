@@ -70,7 +70,19 @@ work can start from a known-good base.
 - [x] **Run** (Mac): `audit/cross_cohort_v0.4.md`. **HER2 RNA 0.684 | CNV 0.762 | RNA+CNV 0.786 (Δ +0.101)**; **LumB RNA 0.922 | CNV 0.686 | RNA+CNV 0.723 (Δ −0.199)**. Finding: amplicon transfer is **general** (both CNV-only > chance), but CNV's *value* is **axis-specific** — helps where the amplicon defines the axis (HER2), dilutes where RNA does (LumB)
 - [x] **IG diagnostic** — `scripts/ig_within_vs_cross_v0.4.py` / `audit/ig_within_vs_cross_v0.4.md`: attribution is **platform-stable** (within ≈ cross); the CNV-only HER2 model keys on co-amplified proliferation loci (not ERBB2) — **model-composition-dependent**, not a platform effect (refuted that hypothesis)
 - [x] README v0.4 section (two-axis table + diagnostic + "per-modality beats a single delta, twice")
-- [ ] v0.4 tag + release notes
+- [x] v0.4 tag + release notes
+
+---
+
+## v0.5 — three follow-ups: strength law, fusion null, calibration
+
+**Goal**: probe the v0.4 axis-specific result three ways — is amplicon strength a continuous predictor, is the LumB dilution a fixable fusion artifact, and does CNV's value extend to calibration?
+
+- [x] **(1) Amplicon strength law** — `mocnv/strength.py` + `scripts/amplicon_strength_v0.5.py` (sklearn, no torch) + tests. Per-gene within-cohort strength vs cross-cohort transfer: **pooled Spearman ρ = +0.836** (HER2 +0.88, LumB +0.39). Resolves the v0.4 IG puzzle (ERBB2/17q12 strongest but collinear -> diluted marginal attribution). `audit/amplicon_strength_v0.5.md`
+- [x] **(2) Gated fusion (null)** — `MultiOmicsModel(gated=True)` input-conditioned softmax gate + `scripts/eval_gated_fusion_v0.5.py` + test. Gate **collapsed to CNV** (~0.99) on both axes -> worsened LumB (−0.249); the TCGA modality preference does not transfer, plain concat wins. Dilution is not a naive-fusion artifact. `audit/gated_fusion_v0.5.md`
+- [x] **(3) Cross-cohort calibration** — `mocnv/calibration.py` (Brier + ECE) + `scripts/eval_calibration_v0.5.py` + tests. Calibration tracks value: CNV improves HER2 (ECE 0.327 -> 0.152), worsens LumB (0.093 -> 0.166); RNA-only HER2 ranks ok but is badly miscalibrated. `audit/calibration_v0.5.md`
+- [x] README v0.5 section (three follow-ups)
+- [ ] v0.5 tag + release notes
 
 ---
 

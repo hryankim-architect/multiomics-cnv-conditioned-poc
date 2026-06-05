@@ -73,6 +73,16 @@ Does the v0.3 result generalize to another amplicon? v0.4 reruns the per-modalit
 
 **Method note — per-modality beats a single delta, twice.** A base-vs-full delta misled in *both* cross-cohort versions: v0.3's RNA+meth baseline went sub-chance from class imbalance (fixed with `pos_weight`), and the meth-silenced baseline went sub-chance again on LumB (fixed by dropping meth). Each time the per-modality columns (RNA-only, CNV-only) stayed clean and carried the real finding. Report the transfer profile, not one delta.
 
+## v0.5 — three follow-ups (strength law · fusion null · calibration)
+
+Three probes of the v0.4 result (CNV's value is axis-specific), in order.
+
+**(1) Amplicon strength predicts transfer — a continuous law.** Per amplicon gene: within-cohort discriminative strength (single-gene AUROC on TCGA) vs cross-cohort single-gene transfer (TCGA→METABRIC). **Pooled Spearman ρ = +0.836** over 40 gene-points (HER2 +0.88, LumB +0.39). The ERBB2/17q12 block is individually strongest (within 0.95 → transfer 0.74); diffuse proliferation genes are weaker. This also resolves the v0.4 IG puzzle: ERBB2/17q12 is the strongest block but is near-perfectly co-amplified (collinear), so multi-gene attribution dilutes each member — the univariate view is collinearity-free and puts ERBB2 on top. ([`audit/amplicon_strength_v0.5.md`](audit/amplicon_strength_v0.5.md); sklearn, no torch.)
+
+**(2) Gated fusion does *not* rescue the dilution — a null.** An input-conditioned softmax gate over modalities collapsed to CNV on both axes (gate ≈ 0.99), making the gated model ≈ CNV-only and *worsening* LumB (−0.249 vs concat −0.199). The gate learns a TCGA modality preference (trust the clean 20-gene CNV over 20530-dim RNA) that does not transfer — so the dilution is not a simple concat artifact, and *which modality to trust* does not transfer either. Plain concat beats the gate on both axes. ([`audit/gated_fusion_v0.5.md`](audit/gated_fusion_v0.5.md).)
+
+**(3) Calibration tracks the axis-specific value.** Cross-cohort Brier/ECE: where CNV helps (HER2) it also improves calibration (RNA-only ECE 0.327 → RNA+CNV 0.152); where it hurts (LumB) it worsens it (0.093 → 0.166). A modality that genuinely carries the axis is both better-ranking and better-calibrated; the wrong one degrades both. Notably RNA-only on HER2 ranks adequately (0.684) but is badly miscalibrated (ECE 0.327) — CNV fixes the probabilities, not just the ranking. ([`audit/calibration_v0.5.md`](audit/calibration_v0.5.md).)
+
 ## Substrate
 
 Each run appends to a hash-chained NDJSON audit trail; MLflow logging is a no-op unless a server is configured; a deterministic canary smoke runs in under a second. ruff + pytest + English-only checks gate every change.
