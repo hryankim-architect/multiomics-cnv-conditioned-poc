@@ -24,15 +24,15 @@ work can start from a known-good base.
 
 ---
 
-## v0.1 — CNV data layer + pole masks (next)
+## v0.1 — CNV data layer + pole masks (2026-06-05)
 
 **Goal**: load and harmonize the CNV modality; define the amplicon-centered pole masks.
 
-- [ ] `cohort.py` — TCGA-BRCA + METABRIC cohort loaders (reuse dmoi cohort schema), aligned to the existing RNA/meth sample IDs
-- [ ] `cnv.py` — GISTIC2 gene-level ingest + cross-platform harmonization decision (and its recorded limits), gene→locus alignment
-- [ ] `priors.py` — CNV pole masks: HER2 → ERBB2 amplicon (17q12); proliferation → MYC (8q24) / CCND1 (11q13)
-- [ ] `synth.py` — small synthetic 3-modality fixtures with planted amplicon structure (HER2 axis CNV-informative; Luminal axis CNV-flat) for tests
-- [ ] Tests: harmonization round-trip, mask coverage, synthetic ablation sanity
+- [x] `cohort.py` — cohort-table builder with the 3-modality intersection (`has_rna`/`has_meth`/`has_cnv`); real TCGA/METABRIC clinical→group assignment reuses dmoi at v0.2
+- [x] `cnv.py` — GISTIC2 gene-level ingest (real file: 1080 × 24,776), per-gene harmonization (the cross-platform decision, with its recorded limit), gene alignment, TCGA barcode normalization
+- [x] `priors.py` — CNV pole masks: HER2 → ERBB2 amplicon (17q12, 8 genes); proliferation → MYC (8q24) + CCND1 (11q13, 12 genes). All present in the real gene universe (8/8, 12/12)
+- [x] `synth.py` — synthetic 3-modality fixtures with planted amplicon structure (HER2 axis CNV-informative; Luminal axis CNV-flat) for tests
+- [x] Tests: GISTIC2 load, alignment/harmonization, mask coverage, synthetic ablation sanity (20 tests green)
 - [ ] v0.1 tag
 
 ---
