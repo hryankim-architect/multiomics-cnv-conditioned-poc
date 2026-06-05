@@ -1,0 +1,5 @@
+{
+  "name": "mocnv-demo",
+  "tier": "smoke",
+  "expected_metric": 0.5
+}

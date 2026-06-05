@@ -1,0 +1,54 @@
+# Data manifest — provenance + caps for the three modalities.
+# RNA and methylation are reused from the dmoi-brca-poc data layer; only CNV is new.
+# Large raw files are gitignored (see data/.gitignore); this manifest is the record.
+
+version: "0.0"
+
+caps:
+  # Keep the demo small and fully reproducible.
+  tcga_brca_samples: 200
+  metabric_samples: 300
+
+datasets:
+  tcga_brca_cnv:
+    modality: cnv
+    cohort: TCGA-BRCA
+    source: UCSC Xena
+    kind: GISTIC2 gene-level copy number (all_data_by_genes)
+    url: https://tcga.xenahubs.net/download/TCGA.BRCA.sampleMap/Gistic2_CopyNumber_Gistic2_all_data_by_genes.gz
+    local: data/tcga_brca/Gistic2_CopyNumber_all_data_by_genes.gz
+    download: scripts/download_tcga_cnv.sh
+    sha256: 6943018718659fcca9d6c3c25ddb8b83c04d3bfeffb78c93085dbbbf0fa036e1  # 2.4M, fetched 2026-06-04
+
+  metabric_cna:
+    modality: cnv
+    cohort: METABRIC
+    source: cBioPortal (brca_metabric)
+    kind: SNP6 gene-level CNA (data_CNA.txt)
+    url: https://cbioportal-datahub.s3.amazonaws.com/brca_metabric.tar.gz
+    local: data/metabric/data_CNA.txt
+    download: scripts/download_metabric_cna.sh
+    sha256: TBD
+    status: "S3 URL returned HTTP 403 on 2026-06-04 — source to be re-confirmed at v0.3 (cross-cohort). Not needed for v0.1/v0.2, which train/evaluate on TCGA."
+
+  # Reused from dmoi-brca-poc (not re-downloaded here; pointers for reference).
+  tcga_brca_rna:
+    modality: rna
+    cohort: TCGA-BRCA
+    source: UCSC Xena (HiSeqV2)
+    reuse_from: dmoi-brca-poc/data/tcga_brca
+  tcga_brca_meth:
+    modality: meth
+    cohort: TCGA-BRCA
+    source: UCSC Xena (HumanMethylation450)
+    reuse_from: dmoi-brca-poc/data/tcga_brca
+  metabric_rna:
+    modality: rna
+    cohort: METABRIC
+    source: cBioPortal (microarray)
+    reuse_from: dmoi-brca-poc/data/metabric
+
+notes:
+  - "CNV is the only new download. RNA/meth are reused from dmoi to keep sample IDs aligned."
+  - "GISTIC2 (TCGA) and SNP6 (METABRIC) are different platforms; cross-platform CNV harmonization is a recorded honest limit (see docs/architecture.md, docs/what-is-out-of-scope.md)."
+  - "No patient-level identifiers are stored; these are public aggregate molecular tables."

@@ -1,0 +1,13 @@
+# Raw downloads are large and reproducible from the manifest — never commit them.
+*.gz
+*.txt
+*.tsv
+*.csv
+*.seg
+tcga_brca/
+metabric/
+
+# Keep the records.
+!README.md
+!manifest.yaml
+!.gitignore
