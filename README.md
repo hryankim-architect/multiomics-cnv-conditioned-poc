@@ -83,6 +83,16 @@ Three probes of the v0.4 result (CNV's value is axis-specific), in order.
 
 **(3) Calibration tracks the axis-specific value.** Cross-cohort Brier/ECE: where CNV helps (HER2) it also improves calibration (RNA-only ECE 0.327 → RNA+CNV 0.152); where it hurts (LumB) it worsens it (0.093 → 0.166). A modality that genuinely carries the axis is both better-ranking and better-calibrated; the wrong one degrades both. Notably RNA-only on HER2 ranks adequately (0.684) but is badly miscalibrated (ECE 0.327) — CNV fixes the probabilities, not just the ranking. ([`audit/calibration_v0.5.md`](audit/calibration_v0.5.md).)
 
+## v0.6 — robustness + external validation (and a second fusion null)
+
+Three more probes, in order.
+
+**(1) Modality-dropout does *not* rescue the gate — a second null.** Regularizing the v0.5 gate with modality-dropout (p=0.5) left the CNV gate at ~0.99 on both axes; gated+dropout stayed below plain concat (LumB −0.236, HER2 +0.075). The collapse is not a regularization problem — without a held-out cross-cohort signal the gate cannot learn transferable modality trust. Plain concat remains the default. ([`audit/gated_fusion_v0.6.md`](audit/gated_fusion_v0.6.md).)
+
+**(2) The strength→transfer law is metric-robust.** Re-measuring strength as **raw GISTIC2 amplitude** (model-free, not AUROC): pooled Spearman **ρ = +0.790**, agreeing with the AUROC-based +0.836. The law is not an artifact of how strength is defined. ([`audit/amplicon_strength_v0.6.md`](audit/amplicon_strength_v0.6.md); sklearn, no torch.)
+
+**(3) It externally validates on a third cohort.** Training per-gene on TCGA (HER2) and testing transfer on the independent **MBC Project** (`brca_mbcproject_wagle_2017`; metastatic; genome-wide CNA; patient-reported HER2, n=218, HER2+=76): Spearman **ρ = +0.889**, matching METABRIC's +0.877. ERBB2/17q12 is strongest and transfers best on this third platform too — the law holds despite the noisier metastatic, self-reported-label setting. ([`audit/external_validation_v0.6.md`](audit/external_validation_v0.6.md); `scripts/download_thirdcohort_probe.sh` to fetch.)
+
 ## Substrate
 
 Each run appends to a hash-chained NDJSON audit trail; MLflow logging is a no-op unless a server is configured; a deterministic canary smoke runs in under a second. ruff + pytest + English-only checks gate every change.

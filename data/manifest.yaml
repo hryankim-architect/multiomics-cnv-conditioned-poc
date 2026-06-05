@@ -53,4 +53,5 @@ notes:
   - "CNV is the only new download. RNA/meth are reused from dmoi to keep sample IDs aligned."
   - "GISTIC2 (TCGA) and SNP6 (METABRIC) are different platforms; cross-platform CNV harmonization is a recorded honest limit (see docs/architecture.md, docs/what-is-out-of-scope.md)."
   - "v0.4 LumA-vs-LumB axis: METABRIC cohort_v2.tsv (LumA 700 / LumB 475) is derived from the PAM50 CLAUDIN_SUBTYPE in clinical_patient.txt, splitting the cohort_v4 Luminal lump. Regenerate with scripts/build_metabric_cohort_v2.py; mirrors the TCGA cohort_v2.tsv that v0.2 used."
+  - "v0.6 third cohort: MBC Project (cBioPortal brca_mbcproject_wagle_2017) genome-wide gene-level CNA + reported HER2 status, for external validation of the strength->transfer law. Fetched on demand by scripts/download_thirdcohort_probe.sh into data/thirdcohort/ (gitignored); metastatic + patient-reported HER2 (a recorded noisier-label caveat)."
   - "No patient-level identifiers are stored; these are public aggregate molecular tables."

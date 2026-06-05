@@ -9,7 +9,19 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from mocnv.strength import per_gene_strength_transfer, rank_spearman  # noqa: E402
+from mocnv.strength import (  # noqa: E402
+    per_gene_amplitude,
+    per_gene_strength_transfer,
+    rank_spearman,
+)
+
+
+def test_per_gene_amplitude_effect_size():
+    cnv = np.array([[2.0, 0.0], [2.0, 0.0], [0.0, 0.0], [0.0, 0.0]])  # gene0 amplified in positives
+    y = np.array([1, 1, 0, 0])
+    amp = per_gene_amplitude(cnv, y)
+    assert amp[0] == 2.0     # mean(pos)=2, mean(neg)=0
+    assert amp[1] == 0.0
 
 
 def test_rank_spearman_monotone():

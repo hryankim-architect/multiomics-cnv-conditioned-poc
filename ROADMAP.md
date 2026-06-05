@@ -82,7 +82,19 @@ work can start from a known-good base.
 - [x] **(2) Gated fusion (null)** — `MultiOmicsModel(gated=True)` input-conditioned softmax gate + `scripts/eval_gated_fusion_v0.5.py` + test. Gate **collapsed to CNV** (~0.99) on both axes -> worsened LumB (−0.249); the TCGA modality preference does not transfer, plain concat wins. Dilution is not a naive-fusion artifact. `audit/gated_fusion_v0.5.md`
 - [x] **(3) Cross-cohort calibration** — `mocnv/calibration.py` (Brier + ECE) + `scripts/eval_calibration_v0.5.py` + tests. Calibration tracks value: CNV improves HER2 (ECE 0.327 -> 0.152), worsens LumB (0.093 -> 0.166); RNA-only HER2 ranks ok but is badly miscalibrated. `audit/calibration_v0.5.md`
 - [x] README v0.5 section (three follow-ups)
-- [ ] v0.5 tag + release notes
+- [x] v0.5 tag + release notes
+
+---
+
+## v0.6 — robustness + external validation (and a second fusion null)
+
+**Goal**: stress-test the v0.5 results — can the gate collapse be regularized away, is the strength law metric-robust, and does it hold on an independent third cohort?
+
+- [x] **(1) Modality-dropout gate (null)** — `fit_model(modality_dropout=)` + `scripts/eval_gated_fusion_v0.6.py`. Dropout (p=0.5) left the CNV gate at ~0.99 on both axes; gated+dropout still below concat (LumB −0.236, HER2 +0.075). Collapse is not a regularization problem — plain concat stays the default. `audit/gated_fusion_v0.6.md`
+- [x] **(2) Strength-law robustness** — `mocnv/strength.py::per_gene_amplitude` + `scripts/amplicon_strength_v0.6.py` + test. Raw GISTIC2 amplitude (model-free) gives pooled **ρ = +0.790** vs AUROC-based +0.836 — the law is metric-robust. `audit/amplicon_strength_v0.6.md`
+- [x] **(3) Third-cohort external validation** — `scripts/download_thirdcohort_probe.sh` (probes 6 cBioPortal studies) found **MBC Project** (`brca_mbcproject_wagle_2017`, genome-wide CNA + reported HER2); `scripts/external_validation_v0.6.py`. Strength→transfer **ρ = +0.889** (n=218, HER2+=76), matching METABRIC's +0.877 — the law generalizes to an independent metastatic cohort. `audit/external_validation_v0.6.md`
+- [x] README v0.6 section
+- [ ] v0.6 tag + release notes
 
 ---
 

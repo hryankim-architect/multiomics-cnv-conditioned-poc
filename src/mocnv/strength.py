@@ -28,6 +28,18 @@ def rank_spearman(x: np.ndarray, y: np.ndarray) -> float:
     return float(np.corrcoef(rx, ry)[0, 1])
 
 
+def per_gene_amplitude(cnv_raw_train: np.ndarray, y_train: np.ndarray) -> np.ndarray:
+    """Per-gene raw amplification effect size: mean(positive) - mean(negative).
+
+    An amplitude-based 'strength' metric (raw GISTIC2 magnitude, not z-scored AUROC),
+    used in v0.6 (2) to check the strength->transfer law is robust to how strength is
+    defined.
+    """
+    y = np.asarray(y_train).astype(bool)
+    cnv = np.asarray(cnv_raw_train, dtype=float)
+    return cnv[y].mean(axis=0) - cnv[~y].mean(axis=0)
+
+
 def per_gene_strength_transfer(
     cnv_train: np.ndarray, y_train: np.ndarray,
     cnv_test: np.ndarray, y_test: np.ndarray,

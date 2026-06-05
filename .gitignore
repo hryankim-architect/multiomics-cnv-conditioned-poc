@@ -12,3 +12,6 @@ audit/*.ndjson
 
 # cBioPortal datahub clone (1+ GB; a transient data source, never commit it).
 datahub/
+
+# Third-cohort probe downloads (v0.6 (3); fetched on demand, never commit).
+data/thirdcohort/

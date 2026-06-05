@@ -47,6 +47,7 @@ def fit_model(
     seed: int = 0,
     pos_weight: bool = False,
     gated: bool = False,
+    modality_dropout: float = 0.0,
 ) -> MultiOmicsModel:
     """Build + train a MultiOmicsModel on the given modality set; return it.
 
@@ -58,6 +59,11 @@ def fit_model(
     ``gated`` (default False): use the input-conditioned softmax gate over modalities
     (v0.5 (2)), so the model can down-weight an unhelpful modality instead of letting
     a plain concat fusion dilute a strong one.
+
+    ``modality_dropout`` (default 0.0; v0.6 (1)): per epoch, with this probability,
+    zero one randomly chosen modality's input. It regularizes the model (and the gate)
+    against over-relying on a single modality — the v0.5 gate collapsed to CNV because
+    it learned a train-cohort preference; dropout forces each modality to stay usable.
     """
     torch.manual_seed(seed)
     dims = {m: modality_arrays[m].shape[1] for m in modalities}
@@ -73,9 +79,15 @@ def fit_model(
     else:
         loss_fn = nn.BCEWithLogitsLoss()
     model.train()
+    md_gen = torch.Generator().manual_seed(seed + 1)
+    n_mod = len(modalities)
     for _ in range(n_epochs):
+        tr_ep = tr
+        if modality_dropout > 0.0 and n_mod > 1 and torch.rand(1, generator=md_gen).item() < modality_dropout:
+            drop = modalities[int(torch.randint(n_mod, (1,), generator=md_gen).item())]
+            tr_ep = {m: (torch.zeros_like(v) if m == drop else v) for m, v in tr.items()}
         opt.zero_grad()
-        loss_fn(model(tr), y_tr).backward()
+        loss_fn(model(tr_ep), y_tr).backward()
         opt.step()
     return model
 
