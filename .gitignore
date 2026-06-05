@@ -9,3 +9,6 @@ venv/
 
 # Local audit ledger (the chain is regenerated per run; never commit it).
 audit/*.ndjson
+
+# cBioPortal datahub clone (1+ GB; a transient data source, never commit it).
+datahub/

@@ -46,7 +46,7 @@ def load_gistic2(path: str | Path) -> CNVMatrix:
         df = df.groupby(level=0).mean()
     gene_names = [str(g) for g in df.index]
     sample_ids = [str(s) for s in df.columns]
-    values = df.to_numpy(dtype=np.float32).T  # genes x samples -> samples x genes
+    values = np.nan_to_num(df.to_numpy(dtype=np.float32).T, nan=0.0)  # missing -> neutral 0
     return CNVMatrix(values=values, sample_ids=sample_ids, gene_names=gene_names)
 
 
@@ -67,7 +67,7 @@ def load_cbioportal_cna(path: str | Path, *, sample_ids: set[str] | None = None)
     sub.index = sub.index.astype(str)
     if sub.index.has_duplicates:
         sub = sub.groupby(level=0).mean()
-    values = sub.to_numpy(dtype=np.float32).T  # genes x samples -> samples x genes
+    values = np.nan_to_num(sub.to_numpy(dtype=np.float32).T, nan=0.0)  # missing CNA -> neutral 0
     return CNVMatrix(
         values=values,
         sample_ids=[str(s) for s in sub.columns],
@@ -122,7 +122,9 @@ def harmonize_gene_level(
     pass-through (keep raw GISTIC2 scores). Cross-platform validity is a recorded
     limit, not a claim.
     """
-    values = np.asarray(values, dtype=np.float32)
+    # Missing copy-number calls (NaN) -> neutral 0 before standardizing, so one
+    # absent value can't poison a whole gene column (SNP6 CNA carries some NaN).
+    values = np.nan_to_num(np.asarray(values, dtype=np.float32), nan=0.0)
     if method == "none":
         return values
     if method == "zscore":

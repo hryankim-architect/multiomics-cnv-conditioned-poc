@@ -7,7 +7,8 @@
 # Output: data/metabric/data_CNA.txt
 set -euo pipefail
 
-URL="https://media.githubusercontent.com/media/cBioPortal/datahub/master/public/brca_metabric/data_CNA.txt"
+# NB: the datahub file is lowercase `data_cna.txt` (the earlier 404 was the casing).
+URL="https://media.githubusercontent.com/media/cBioPortal/datahub/master/public/brca_metabric/data_cna.txt"
 OUT_DIR="data/metabric"
 OUT="${OUT_DIR}/data_CNA.txt"
 mkdir -p "${OUT_DIR}"

@@ -52,11 +52,11 @@ work can start from a known-good base.
 
 ## v0.3 — cross-cohort honest limit
 
-**Goal**: the METABRIC external check, with its weaker-than-RNA caveat reported, not hidden.
+**Goal**: the METABRIC external check — does CNV survive the GISTIC2→SNP6 platform jump? Reported honestly, including the sub-chance-baseline trap and the RNA/CNV redundancy finding.
 
-- [x] `cnv.load_cbioportal_cna` (SNP6 `data_CNA.txt` loader) + tests; `scripts/eval_cross_cohort.py` (TCGA-train → METABRIC-score: RNA QN→TCGA + meth silenced + SNP6 CNV amplicon-masked); download source fixed (git-LFS media + fallbacks)
-- [ ] **Run** (Mac, after `scripts/download_metabric_cna.sh`): produces `audit/cross_cohort_v0.3.md` + cross-cohort CNV delta + METABRIC CNV IG (expected weaker than the TCGA +0.125 — honest cross-platform limit)
-- [ ] README climax: cross-cohort row
+- [x] `cnv.load_cbioportal_cna` (SNP6 `data_CNA.txt` loader) + tests; `scripts/eval_cross_cohort.py` (TCGA-train → METABRIC-score: RNA QN→TCGA + meth silenced + SNP6 CNV amplicon-masked, HER2 class-weighted via opt-in `pos_weight`); download source fixed (git-LFS media + fallbacks)
+- [x] **Run** (Mac): `audit/cross_cohort_v0.3.md`. Per-modality cross-cohort AUROC — **RNA-only 0.684 | CNV-only 0.762 | RNA+meth 0.770 | +CNV 0.752 (delta −0.018)**. Honest finding: CNV transfers *better* than RNA standalone, but is **redundant** with RNA on HER2 (null full-model delta); ERBB2 amplicon leads CNV IG cross-platform. (An unweighted baseline scored sub-chance and inflated the delta to +0.4 — caught + corrected with `pos_weight`.)
+- [x] README climax: cross-cohort per-modality table
 - [ ] v0.3 tag + release notes
 
 ---

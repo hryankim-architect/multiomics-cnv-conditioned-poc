@@ -28,7 +28,7 @@ The result is **RNA+meth vs RNA+meth+CNV**, per task axis, with:
 
 ## Honest scope (stated up front)
 
-- **Cross-cohort CNV is harder than RNA.** TCGA GISTIC2 and METABRIC SNP6 CNA are different platforms/pipelines; the quantile-normalization trick that made RNA transfer is not obviously valid for discrete-ish copy-number calls. The cross-cohort validation is therefore **weaker** than dmoi's RNA result — reported, not hidden.
+- **Cross-cohort CNV is a platform jump.** TCGA GISTIC2 and METABRIC SNP6 CNA are different copy-number platforms; gene-level z-scoring is the bridge, not a validated normalization. Measured in v0.3 (below): standalone, CNV transfers *comparably to or better than* RNA across platforms, but it adds **nothing incremental** over RNA+meth — the two modalities are redundant on the HER2 axis. Reported, not hidden.
 - **No clean matched external at identical processing** for CNV — a recorded limitation.
 - **Modality addition ≠ accuracy win.** The honest hypothesis is that CNV helps amplicon-driven axes and adds little for others. The ablation is the deliverable; a modest or null delta is acceptable (the dmoi v0.13 posture).
 - The unit tests run on **small synthetic fixtures**; real cohorts are downloaded by the user (`scripts/download_*.sh`). This repo demonstrates the method and the engineering, not a benchmark claim about real cohorts.
@@ -43,6 +43,20 @@ Same `MultiOmicsModel`, 5-fold StratifiedKFold (seed 42), v0.6 sizing. CNV is ge
 | LumA-vs-LumB | 403 | 0.855 ± 0.030 | 0.848 ± 0.054 | −0.007 | PVT1, CASC8, MYC, POU5F1B, FGF19 |
 
 **Reading.** CNV adds real signal on the amplicon-driven **HER2** axis (+0.125 AUROC), and the CNV attribution lands squarely on the **17q12 ERBB2 amplicon** — every one of the top-5 attributed genes is a co-amplified 17q12 gene, exactly the biology HER2 is defined by. On **LumA-vs-LumB**, which is not amplicon-defined, CNV adds nothing (−0.007, within noise) — the honest null. The third modality helps where the biology says it should and not elsewhere; that per-axis honesty is the deliverable, not a uniform accuracy bump. (Synthetic-fixture demo: `scripts/run_ablation_synth.py`.)
+
+## Cross-cohort transfer — TCGA → METABRIC (v0.3)
+
+Does the CNV branch survive a **platform jump**? Train on TCGA (RNA-seq + HM450 + GISTIC2 CNV, HER2 class-weighted), score METABRIC (RNA microarray quantile-normalized to TCGA, methylation silenced, **SNP6** CNA — a *different* copy-number platform — amplicon-masked + z-scored), HER2-vs-Luminal. Reproduce: `python scripts/eval_cross_cohort.py`.
+
+| Setting (cross-cohort, METABRIC n=1399) | AUROC |
+|---|---|
+| RNA only | 0.684 |
+| **CNV only** (SNP6, amplicon) | **0.762** |
+| RNA + meth(silenced) — baseline | 0.770 |
+| + CNV (full) | 0.752 |
+| **CNV delta (full − base)** | **−0.018** |
+
+**Reading.** The per-modality table separates two honest findings a single delta would hide. **(1)** Standalone, the SNP6 amplicon **CNV transfers across platforms at least as well as RNA** (0.762 vs 0.684) — copy-number amplification is a discrete, platform-robust event (GISTIC2 or SNP6, an amplification is an amplification), whereas microarray→RNA-seq expression transfer stays noisier even after quantile normalization. **(2)** In the full model the **CNV delta is null** (−0.018): CNV and RNA are *redundant* on the HER2 axis (ERBB2 amplification drives ERBB2 over-expression), so once RNA+meth reaches 0.770 the amplicon CNV adds nothing incremental. The within-cohort **+0.125** (v0.2, same-platform) does not reappear cross-cohort — **not because CNV fails to transfer, but because the baseline already carries the shared signal.** The CNV attribution still keys on the 17q12 ERBB2 amplicon (STARD3, PGAP3, MIEN1, ERBB2) cross-platform. Full audit, including the sub-chance-baseline trap we caught and fixed: [`audit/cross_cohort_v0.3.md`](audit/cross_cohort_v0.3.md).
 
 ## Substrate
 

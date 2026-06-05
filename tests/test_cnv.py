@@ -76,3 +76,20 @@ def test_load_cbioportal_cna_sample_filter(tmp_path):
     m = cnv.load_cbioportal_cna(p, sample_ids={"MB-0002"})
     assert m.sample_ids == ["MB-0002"]
     assert m.n_genes == 1
+
+
+def test_load_cbioportal_cna_fills_missing(tmp_path):
+    # 'NA' and blank cells (real in SNP6 CNA) must not propagate NaN downstream.
+    p = tmp_path / "data_CNA.txt"
+    p.write_text(
+        "Hugo_Symbol\tEntrez_Gene_Id\tMB-0001\tMB-0002\n"
+        "ERBB2\t2064\t2\tNA\n"
+        "MYC\t4609\t\t1\n"
+    )
+    m = cnv.load_cbioportal_cna(p)
+    assert not np.isnan(m.values).any()
+
+
+def test_harmonize_is_nan_robust():
+    vals = np.array([[1.0, np.nan], [3.0, 2.0]], dtype=np.float32)
+    assert not np.isnan(cnv.harmonize_gene_level(vals, method="zscore")).any()

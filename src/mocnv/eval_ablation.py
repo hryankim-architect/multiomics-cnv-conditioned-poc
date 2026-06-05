@@ -18,6 +18,8 @@ from mocnv.model import MultiOmicsModel
 
 BASELINE_SET = ("rna", "meth")
 FULL_SET = ("rna", "meth", "cnv")
+RNA_ONLY = ("rna",)
+CNV_ONLY = ("cnv",)
 
 
 @dataclass
@@ -43,8 +45,15 @@ def fit_model(
     lr: float = 1e-3,
     weight_decay: float = 1e-4,
     seed: int = 0,
+    pos_weight: bool = False,
 ) -> MultiOmicsModel:
-    """Build + train a MultiOmicsModel on the given modality set; return it."""
+    """Build + train a MultiOmicsModel on the given modality set; return it.
+
+    ``pos_weight`` (default False, so within-cohort v0.2 behavior is unchanged):
+    when True, weight the positive class in BCE by n_neg/n_pos. This matters for
+    the cross-cohort transfer, where the train cohort (TCGA HER2 ~13%) is imbalanced
+    and an unweighted boundary transfers poorly across platforms.
+    """
     torch.manual_seed(seed)
     dims = {m: modality_arrays[m].shape[1] for m in modalities}
     model = MultiOmicsModel(dims, latent_dim=latent_dim)
@@ -52,7 +61,12 @@ def fit_model(
     y_tr = _tensor(y[train_idx])
 
     opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
-    loss_fn = nn.BCEWithLogitsLoss()
+    if pos_weight:
+        n_pos = float(y_tr.sum())
+        pw = torch.tensor([(len(y_tr) - n_pos) / max(n_pos, 1.0)], dtype=torch.float32)
+        loss_fn = nn.BCEWithLogitsLoss(pos_weight=pw)
+    else:
+        loss_fn = nn.BCEWithLogitsLoss()
     model.train()
     for _ in range(n_epochs):
         opt.zero_grad()
