@@ -58,6 +58,21 @@ Does the CNV branch survive a **platform jump**? Train on TCGA (RNA-seq + HM450 
 
 **Reading.** The per-modality table separates two honest findings a single delta would hide. **(1)** Standalone, the SNP6 amplicon **CNV transfers across platforms at least as well as RNA** (0.762 vs 0.684) — copy-number amplification is a discrete, platform-robust event (GISTIC2 or SNP6, an amplification is an amplification), whereas microarray→RNA-seq expression transfer stays noisier even after quantile normalization. **(2)** In the full model the **CNV delta is null** (−0.018): CNV and RNA are *redundant* on the HER2 axis (ERBB2 amplification drives ERBB2 over-expression), so once RNA+meth reaches 0.770 the amplicon CNV adds nothing incremental. The within-cohort **+0.125** (v0.2, same-platform) does not reappear cross-cohort — **not because CNV fails to transfer, but because the baseline already carries the shared signal.** The CNV attribution still keys on the 17q12 ERBB2 amplicon (STARD3, PGAP3, MIEN1, ERBB2) cross-platform. Full audit, including the sub-chance-baseline trap we caught and fixed: [`audit/cross_cohort_v0.3.md`](audit/cross_cohort_v0.3.md).
 
+## Second amplicon axis — amplicon-general or HER2-specific? (v0.4)
+
+Does the v0.3 result generalize to another amplicon? v0.4 reruns the per-modality cross-cohort transfer on a second axis — **LumA-vs-LumB** (proliferation; the MYC 8q24 / CCND1 11q13 amplicon pole), built from METABRIC's PAM50 split. It also **drops the silenced-meth branch** (METABRIC has no methylation), so the baseline is RNA-only and the delta is uncontaminated. Reproduce: `python scripts/build_metabric_cohort_v2.py && python scripts/eval_cross_cohort_v0.4.py`.
+
+| Axis (cross-cohort, METABRIC) | RNA-only | CNV-only | RNA+CNV | CNV Δ (vs RNA) |
+|---|---|---|---|---|
+| HER2-vs-Luminal | 0.684 | **0.762** | 0.786 | **+0.101** |
+| LumA-vs-LumB | **0.922** | 0.686 | 0.723 | **−0.199** |
+
+**Reading.** Both amplicons transfer across platforms standalone (CNV-only 0.762 and 0.686, both > chance) — copy-number **amplicon transfer is general**, not an ERBB2 quirk. But **CNV's *value* is axis-specific**: it helps where the amplicon *defines* the axis (HER2, +0.101, CNV-only ≥ RNA) and *hurts* where RNA defines it (LumB, −0.199 — adding the weaker CNV dilutes a strong 0.922 RNA signal in a plain concat fusion). So v0.3's "CNV ≥ RNA" is HER2/definitional-specific; the underlying transfer is general.
+
+**Attribution diagnostic** ([`audit/ig_within_vs_cross_v0.4.md`](audit/ig_within_vs_cross_v0.4.md)). CNV attribution is **platform-stable** (within-cohort TCGA ≈ cross-cohort METABRIC IG, both axes — we tested for a platform effect and there is none). A CNV-only HER2 classifier keys on the co-amplified **proliferation** loci (8q24/11q13), not ERBB2 — on both platforms — because, copy-number-only, proliferation amplification separates HER2 from a LumA-dominated Luminal group better than ERBB2 does. The v0.2 *full* model's CNV branch keyed on ERBB2 because RNA carried the rest, so which locus CNV attributes to is **model-composition-dependent**. The HER2 copy-number signature is broader than ERBB2 alone.
+
+**Method note — per-modality beats a single delta, twice.** A base-vs-full delta misled in *both* cross-cohort versions: v0.3's RNA+meth baseline went sub-chance from class imbalance (fixed with `pos_weight`), and the meth-silenced baseline went sub-chance again on LumB (fixed by dropping meth). Each time the per-modality columns (RNA-only, CNV-only) stayed clean and carried the real finding. Report the transfer profile, not one delta.
+
 ## Substrate
 
 Each run appends to a hash-chained NDJSON audit trail; MLflow logging is a no-op unless a server is configured; a deterministic canary smoke runs in under a second. ruff + pytest + English-only checks gate every change.

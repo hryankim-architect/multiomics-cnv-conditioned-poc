@@ -68,3 +68,21 @@ def test_ig_keys_on_her2_amplicon():
     attr = attribution.integrated_gradients(model, inputs, "cnv", steps=16)
     top5 = {g for g, _ in attribution.rank_genes_by_attribution(attr, s.cnv_genes)[:5]}
     assert top5 & set(POLE_HER2_CNV)   # a HER2 amplicon gene is among the top CNV attributions
+
+
+def test_pos_weight_and_single_modality_sets_train():
+    # v0.3/v0.4 path: class-weighted training + the RNA-only / CNV-only modality sets.
+    s = synth.generate("HER2", seed=0, n=200)
+    arrays = _arrays(s)
+    idx = np.arange(200)
+    for mods in (eval_ablation.RNA_ONLY, eval_ablation.CNV_ONLY, eval_ablation.FULL_SET):
+        model = eval_ablation.fit_model(
+            arrays, s.y, mods, train_idx=idx, latent_dim=16, n_epochs=60, seed=0, pos_weight=True
+        )
+        auroc = eval_ablation.auroc_of(model, arrays, s.y, mods, idx)
+        assert 0.0 <= auroc <= 1.0     # single-modality subsets are valid models
+    full = eval_ablation.fit_model(
+        arrays, s.y, eval_ablation.FULL_SET, train_idx=idx, latent_dim=16, n_epochs=120, seed=0, pos_weight=True
+    )
+    # class-weighted full model still recovers the planted HER2 structure
+    assert eval_ablation.auroc_of(full, arrays, s.y, eval_ablation.FULL_SET, idx) > 0.75

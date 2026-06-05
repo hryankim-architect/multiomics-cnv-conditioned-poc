@@ -57,7 +57,20 @@ work can start from a known-good base.
 - [x] `cnv.load_cbioportal_cna` (SNP6 `data_CNA.txt` loader) + tests; `scripts/eval_cross_cohort.py` (TCGA-train → METABRIC-score: RNA QN→TCGA + meth silenced + SNP6 CNV amplicon-masked, HER2 class-weighted via opt-in `pos_weight`); download source fixed (git-LFS media + fallbacks)
 - [x] **Run** (Mac): `audit/cross_cohort_v0.3.md`. Per-modality cross-cohort AUROC — **RNA-only 0.684 | CNV-only 0.762 | RNA+meth 0.770 | +CNV 0.752 (delta −0.018)**. Honest finding: CNV transfers *better* than RNA standalone, but is **redundant** with RNA on HER2 (null full-model delta); ERBB2 amplicon leads CNV IG cross-platform. (An unweighted baseline scored sub-chance and inflated the delta to +0.4 — caught + corrected with `pos_weight`.)
 - [x] README climax: cross-cohort per-modality table
-- [ ] v0.3 tag + release notes
+- [x] v0.3 tag + release notes
+
+---
+
+## v0.4 — second amplicon axis: amplicon-general or HER2-specific?
+
+**Goal**: test whether the v0.3 result generalizes to a second amplicon (MYC 8q24 / CCND1 11q13) on the LumA-vs-LumB axis, with a meth-free (uncontaminated) cross-cohort baseline.
+
+- [x] `cohort.build_metabric_cohort_v2` + `scripts/build_metabric_cohort_v2.py` — split METABRIC's Luminal lump into LumA/LumB via PAM50 `CLAUDIN_SUBTYPE` (LumA 700 / LumB 475); tests
+- [x] `scripts/eval_cross_cohort_v0.4.py` — two-axis per-modality cross-cohort, **meth-free** (RNA+CNV only; drops the silenced-meth branch that broke the LumB baseline). pos_weight + RNA-only/CNV-only/RNA+CNV
+- [x] **Run** (Mac): `audit/cross_cohort_v0.4.md`. **HER2 RNA 0.684 | CNV 0.762 | RNA+CNV 0.786 (Δ +0.101)**; **LumB RNA 0.922 | CNV 0.686 | RNA+CNV 0.723 (Δ −0.199)**. Finding: amplicon transfer is **general** (both CNV-only > chance), but CNV's *value* is **axis-specific** — helps where the amplicon defines the axis (HER2), dilutes where RNA does (LumB)
+- [x] **IG diagnostic** — `scripts/ig_within_vs_cross_v0.4.py` / `audit/ig_within_vs_cross_v0.4.md`: attribution is **platform-stable** (within ≈ cross); the CNV-only HER2 model keys on co-amplified proliferation loci (not ERBB2) — **model-composition-dependent**, not a platform effect (refuted that hypothesis)
+- [x] README v0.4 section (two-axis table + diagnostic + "per-modality beats a single delta, twice")
+- [ ] v0.4 tag + release notes
 
 ---
 

@@ -1,0 +1,10 @@
+# Does the CNV attribution transfer across platforms? — v0.4 diagnostic
+
+Same CNV-only model (trained on TCGA, class-weighted) attributed via Integrated Gradients on **TCGA GISTIC2** (within-cohort) vs **METABRIC SNP6** (cross-cohort) inputs. This isolates the platform variable: *were* the within-cohort HER2 IG to key on the ERBB2 17q12 amplicon while the cross-cohort one does not, the attribution would not transfer across platforms even where the AUROC does (v0.4: HER2 CNV-only 0.762). The result below refutes that hypothesis.
+
+| Axis | within-cohort (TCGA GISTIC2) IG top-5 (pole) | cross-cohort (METABRIC SNP6) IG top-5 (pole) |
+|---|---|---|
+| HER2-vs-Luminal | MYC, FADD, PVT1, POU5F1B, CASC8 (MYC-8q24/CCND1-11q13) | MYC, FADD, PVT1, MIEN1, POU5F1B (MYC-8q24/CCND1-11q13) |
+| LumA-vs-LumB | CCND1, FGF19, FADD, PVT1, CASC8 (MYC-8q24/CCND1-11q13) | CCND1, FGF19, FADD, PVT1, CASC8 (MYC-8q24/CCND1-11q13) |
+
+Honest reading: the platform hypothesis is **refuted**. Within-cohort and cross-cohort IG agree on both axes (LumB is identical; HER2 differs by one gene, MIEN1 vs CASC8) — so **attribution is platform-stable**, not a GISTIC2 -> SNP6 artifact. The real finding is that the **CNV-only HER2 model keys on the co-amplified proliferation loci (8q24 MYC / 11q13 CCND1), not ERBB2/17q12**, on *both* platforms: to separate HER2 from a LumA-dominated Luminal group using copy number alone, proliferation amplification (high in HER2, low in LumA) is more discriminative than ERBB2 itself. This is **model-composition-dependent**, not platform-dependent — the v0.2 *full* model's CNV branch keyed on ERBB2 because RNA carried the proliferation/expression signal, freeing the CNV branch to specialize on the 17q12 amplicon; a CNV-only model has no such division of labour and leans on the most discriminative copy-number feature. The HER2 copy-number signature is broader than ERBB2 alone, and which locus the CNV branch attributes to depends on what other modalities share the model. LumB keying on the proliferation pole identically on both platforms is the stable control.
