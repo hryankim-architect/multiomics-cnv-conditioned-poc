@@ -41,10 +41,11 @@ work can start from a known-good base.
 
 **Goal**: add the CNV branch, run the modality ablation, attribute it.
 
-- [ ] `encoder.py` — `CNVEncoder` (mirrors RNA/Meth encoders); `model.py` — 3-perspective pole fusion (extend dmoi `PoleFuser`), v0.6 hyperparameters unchanged
-- [ ] `eval_ablation.py` — RNA+meth vs RNA+meth+CNV, 5-fold CV AUROC/bacc per axis; per-pole IG (Captum) showing CNV keys on the expected amplicons
-- [ ] `audit/ablation_v0.2.md` — the honest per-axis verdict (including any null)
-- [ ] Tests: 3-modality forward shape, ablation determinism, IG-on-amplicon assertion (synthetic)
+- [x] `encoder.py` — `ModalityEncoder` / `make_encoder` (RNA/meth/CNV); `model.py` — `MultiOmicsModel`, per-modality encoders + concat-fuse + head, configurable modality subset for the ablation, v0.6 sizing
+- [x] `eval_ablation.py` — RNA+meth vs RNA+meth+CNV on identical splits (`run_ablation`/`fit_model`); `attribution.py` — lightweight Integrated Gradients (no Captum dep) + gene ranking
+- [x] Tests (torch-guarded): 3-modality forward shape, modality-subset, CNV-helps-HER2-more-than-Luminal, IG-keys-on-ERBB2-amplicon (synthetic)
+- [x] `scripts/run_ablation_synth.py` — synthetic ablation demo + `audit/ablation_synth_v0.2.md`
+- [ ] **Real-cohort ablation** (his Mac): wire TCGA GISTIC2 (`cnv.load_gistic2`) + dmoi RNA/meth + cohort -> `run_ablation`, 5-fold; write `audit/ablation_v0.2.md` with the honest per-axis verdict + per-pole IG
 - [ ] v0.2 tag
 
 ---
