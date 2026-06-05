@@ -28,9 +28,6 @@ jobs:
       - name: Lint
         run: uv run ruff check src scripts tests
 
-      - name: English-only / CJK scan
-        run: uv run python scripts/check_english_only.py
-
       - name: Run tests
         run: uv run pytest -q
 

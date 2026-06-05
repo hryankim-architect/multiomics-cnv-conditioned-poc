@@ -14,7 +14,7 @@ private plan `~/Downloads/AI/cnv-multimodal-spinoff-plan.md`.
 **Goal**: substrate-clean repo with the CNV datasets downloading, so the modeling
 work can start from a known-good base.
 
-- [x] Inherit the shared scaffold (audit / canary / tracking, ruff + pytest + English-only)
+- [x] Inherit the shared scaffold (audit / canary / tracking, ruff + pytest)
 - [x] Package `mocnv`, `pyproject.toml`, canary smoke + audit-chain tests green
 - [x] `README.md` (honest-scope + capability claim), `docs/architecture.md`, `docs/what-is-out-of-scope.md`, this ROADMAP
 - [x] `data/manifest.yaml` + `data/README.md` (provenance + clean-room note)

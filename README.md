@@ -109,6 +109,6 @@ Three more probes, in order.
 
 ## Substrate
 
-Each run appends to a hash-chained NDJSON audit trail; MLflow logging is a no-op unless a server is configured; a deterministic canary smoke runs in under a second. ruff + pytest + English-only checks gate every change.
+Each run appends to a hash-chained NDJSON audit trail; MLflow logging is a no-op unless a server is configured; a deterministic canary smoke runs in under a second. ruff + pytest gate every change.
 
 See [`docs/architecture.md`](docs/architecture.md) for the design and [`docs/what-is-out-of-scope.md`](docs/what-is-out-of-scope.md) for the boundaries. The build sequence is in [`ROADMAP.md`](ROADMAP.md).
