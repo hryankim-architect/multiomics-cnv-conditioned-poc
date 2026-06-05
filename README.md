@@ -8,6 +8,18 @@ This repo extends the [`dmoi-brca-poc`](https://github.com/hryankim-architect/dm
 
 It is a spin-off, not a `dmoi-brca-poc` point release — a third modality is a larger claim than "the architecture is reusable," with its own data layer and honest cross-cohort limits (see below), so it gets its own clean-room repo.
 
+## What this repo found (v0.2 → v0.6)
+
+A compact, honest arc — every claim is a measurement against a baseline, including the nulls. Each point links to its section below.
+
+- **CNV adds signal only where its amplicon defines the axis.** Within-cohort it lifts HER2 (+0.125 AUROC; the CNV attribution lands on the ERBB2 17q12 amplicon) and adds nothing to LumA-vs-LumB (−0.007). The third modality helps where the biology says it should, not uniformly. *(v0.2)*
+- **Cross-platform (TCGA→METABRIC), CNV transfers — but its *value* is axis-specific.** Standalone, the amplicon CNV transfers at least as well as RNA (HER2 CNV-only 0.762 ≥ RNA 0.684); yet it *helps* the full model only where the amplicon defines the axis (HER2 +0.101) and *dilutes* a strong RNA signal where RNA defines it (LumB −0.199). *(v0.3–v0.4)*
+- **A continuous law: amplicon strength predicts cross-platform transfer.** Per gene, within-cohort discriminative strength predicts cross-cohort transfer (pooled Spearman **+0.84**), robust to the strength metric (raw amplitude **+0.79**) and validated on an independent third cohort (MBC Project **+0.89** ≈ METABRIC +0.88). *(v0.5–v0.6)*
+- **Two honest nulls.** A learnable gated fusion does *not* beat plain concat — the gate collapses to one modality and that preference does not transfer, even with dropout regularization. Reported, not hidden. *(v0.5–v0.6)*
+- **Calibration tracks value; attribution is subtler than it looks.** The modality that carries an axis is both better-ranking *and* better-calibrated; and a multi-gene attribution that looked "off" (HER2 keying on proliferation, not ERBB2) was a **collinearity** artifact — the univariate view puts ERBB2 back on top. *(v0.5)*
+
+Method carried throughout: report the **per-modality transfer profile**, not a single base-vs-full delta — a single delta was misled by a broken baseline *twice* (class imbalance, then meth-silencing), each time caught by the per-modality view.
+
 ## The capability, in one diagram
 
 ```
