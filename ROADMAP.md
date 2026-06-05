@@ -4,8 +4,7 @@ Public build plan: a clean-room three-modality (RNA + meth + **CNV**) extension 
 the DMOI architecture, delivering an honest per-axis **modality ablation**. Short
 and dated so anyone clicking the repo sees exactly where the work stands.
 
-Design rationale: `docs/architecture.md`. Spin-off decision + honest limits: the
-private plan `~/Downloads/AI/cnv-multimodal-spinoff-plan.md`.
+Design rationale: `docs/architecture.md`. Honest limits: `docs/what-is-out-of-scope.md`.
 
 ---
 
