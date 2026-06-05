@@ -52,3 +52,27 @@ def test_load_gistic2_real_file_shape_and_anchors():
     # the CNV pole anchors must exist in the real gene universe
     for anchor in ("ERBB2", "MYC", "CCND1"):
         assert anchor in m.gene_names
+
+
+def test_load_cbioportal_cna_parses_and_collapses(tmp_path):
+    p = tmp_path / "data_CNA.txt"
+    p.write_text(
+        "Hugo_Symbol\tEntrez_Gene_Id\tMB-0001\tMB-0002\tMB-0003\n"
+        "ERBB2\t2064\t2\t0\t-1\n"
+        "MYC\t4609\t1\t1\t0\n"
+        "ERBB2\t2064\t0\t0\t-1\n"  # duplicate Hugo -> collapsed by mean with the first ERBB2 row
+    )
+    m = cnv.load_cbioportal_cna(p)
+    assert m.n_samples == 3
+    assert set(m.gene_names) == {"ERBB2", "MYC"}            # duplicate collapsed
+    assert m.sample_ids == ["MB-0001", "MB-0002", "MB-0003"]
+    erbb2 = m.gene_names.index("ERBB2")
+    assert abs(float(m.values[0, erbb2]) - 1.0) < 1e-6      # mean(2, 0) on MB-0001
+
+
+def test_load_cbioportal_cna_sample_filter(tmp_path):
+    p = tmp_path / "data_CNA.txt"
+    p.write_text("Hugo_Symbol\tEntrez_Gene_Id\tMB-0001\tMB-0002\nERBB2\t2064\t2\t0\n")
+    m = cnv.load_cbioportal_cna(p, sample_ids={"MB-0002"})
+    assert m.sample_ids == ["MB-0002"]
+    assert m.n_genes == 1

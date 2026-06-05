@@ -24,12 +24,13 @@ datasets:
     modality: cnv
     cohort: METABRIC
     source: cBioPortal (brca_metabric)
-    kind: SNP6 gene-level CNA (data_CNA.txt)
-    url: https://cbioportal-datahub.s3.amazonaws.com/brca_metabric.tar.gz
+    kind: SNP6 gene-level CNA (data_CNA.txt; Hugo_Symbol + Entrez_Gene_Id + MB-* samples)
+    url: https://media.githubusercontent.com/media/cBioPortal/datahub/master/public/brca_metabric/data_CNA.txt
+    url_fallback: https://cbioportal-datahub.s3.amazonaws.com/brca_metabric.tar.gz  # was HTTP 403 2026-06-04
     local: data/metabric/data_CNA.txt
     download: scripts/download_metabric_cna.sh
-    sha256: TBD
-    status: "S3 URL returned HTTP 403 on 2026-06-04 — source to be re-confirmed at v0.3 (cross-cohort). Not needed for v0.1/v0.2, which train/evaluate on TCGA."
+    sha256: TBD  # fill after download (script validates Hugo_Symbol header + prints hash)
+    status: "v0.3 dependency (cross-cohort). Primary S3 tarball 403'd 2026-06-04; download script now uses the datahub git-LFS media endpoint with UI/clone fallbacks."
 
   # Reused from dmoi-brca-poc (not re-downloaded here; pointers for reference).
   tcga_brca_rna:

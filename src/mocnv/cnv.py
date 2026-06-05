@@ -50,6 +50,31 @@ def load_gistic2(path: str | Path) -> CNVMatrix:
     return CNVMatrix(values=values, sample_ids=sample_ids, gene_names=gene_names)
 
 
+def load_cbioportal_cna(path: str | Path, *, sample_ids: set[str] | None = None) -> CNVMatrix:
+    """Load a cBioPortal `data_CNA.txt` (METABRIC SNP6) as samples x genes.
+
+    Format: `Hugo_Symbol <tab> Entrez_Gene_Id <tab> <sample columns…>`, identical
+    to the METABRIC mRNA matrix. The Entrez column is dropped; duplicate Hugo
+    symbols are collapsed by mean. Optionally restrict to ``sample_ids``.
+
+    Note: METABRIC CNA is a different platform (SNP6) from TCGA GISTIC2 — aligning
+    both at gene level is the cross-platform decision whose limits v0.3 reports.
+    """
+    df = pd.read_csv(path, sep="\t", low_memory=False)
+    gene_col = df.columns[0]  # Hugo_Symbol
+    sample_cols = [c for c in df.columns[2:] if sample_ids is None or c in sample_ids]
+    sub = df[[gene_col, *sample_cols]].rename(columns={gene_col: "gene"}).set_index("gene")
+    sub.index = sub.index.astype(str)
+    if sub.index.has_duplicates:
+        sub = sub.groupby(level=0).mean()
+    values = sub.to_numpy(dtype=np.float32).T  # genes x samples -> samples x genes
+    return CNVMatrix(
+        values=values,
+        sample_ids=[str(s) for s in sub.columns],
+        gene_names=[str(g) for g in sub.index],
+    )
+
+
 def barcode_to_sample(sample_ids: list[str]) -> list[str]:
     """Normalize TCGA barcodes to the sample level (TCGA-XX-XXXX-NN).
 

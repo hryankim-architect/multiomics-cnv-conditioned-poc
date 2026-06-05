@@ -54,10 +54,10 @@ work can start from a known-good base.
 
 **Goal**: the METABRIC external check, with its weaker-than-RNA caveat reported, not hidden.
 
-- [ ] METABRIC SNP6 CNA external scoring (RNA+meth+CNV), cross-platform caveat documented
-- [ ] `audit/cross_cohort_v0.3.md` — the honest cross-cohort CNV result (expected weaker than dmoi's RNA transfer)
-- [ ] README climax: the modality-ablation table + cross-cohort row
-- [ ] v0.3 tag + release notes summarizing the three-modality claim and its limits
+- [x] `cnv.load_cbioportal_cna` (SNP6 `data_CNA.txt` loader) + tests; `scripts/eval_cross_cohort.py` (TCGA-train → METABRIC-score: RNA QN→TCGA + meth silenced + SNP6 CNV amplicon-masked); download source fixed (git-LFS media + fallbacks)
+- [ ] **Run** (Mac, after `scripts/download_metabric_cna.sh`): produces `audit/cross_cohort_v0.3.md` + cross-cohort CNV delta + METABRIC CNV IG (expected weaker than the TCGA +0.125 — honest cross-platform limit)
+- [ ] README climax: cross-cohort row
+- [ ] v0.3 tag + release notes
 
 ---
 
