@@ -45,8 +45,8 @@ work can start from a known-good base.
 - [x] `eval_ablation.py` — RNA+meth vs RNA+meth+CNV on identical splits (`run_ablation`/`fit_model`); `attribution.py` — lightweight Integrated Gradients (no Captum dep) + gene ranking
 - [x] Tests (torch-guarded): 3-modality forward shape, modality-subset, CNV-helps-HER2-more-than-Luminal, IG-keys-on-ERBB2-amplicon (synthetic)
 - [x] `scripts/run_ablation_synth.py` — synthetic ablation demo + `audit/ablation_synth_v0.2.md`
-- [ ] **Real-cohort ablation** (his Mac): wire TCGA GISTIC2 (`cnv.load_gistic2`) + dmoi RNA/meth + cohort -> `run_ablation`, 5-fold; write `audit/ablation_v0.2.md` with the honest per-axis verdict + per-pole IG
-- [ ] v0.2 tag
+- [x] **Real-cohort ablation** — `scripts/eval_ablation_real.py`: TCGA GISTIC2 + dmoi RNA/meth, 5-fold. **HER2-vs-Luminal CNV Δ +0.125 (0.809→0.934; ERBB2 amplicon leads the CNV IG); LumA-vs-LumB Δ −0.007 (honest null).** See `audit/ablation_v0.2.md`
+- [x] v0.2 tag
 
 ---
 

@@ -33,6 +33,17 @@ The result is **RNA+meth vs RNA+meth+CNV**, per task axis, with:
 - **Modality addition ≠ accuracy win.** The honest hypothesis is that CNV helps amplicon-driven axes and adds little for others. The ablation is the deliverable; a modest or null delta is acceptable (the dmoi v0.13 posture).
 - The unit tests run on **small synthetic fixtures**; real cohorts are downloaded by the user (`scripts/download_*.sh`). This repo demonstrates the method and the engineering, not a benchmark claim about real cohorts.
 
+## Demo results — TCGA modality ablation (v0.2)
+
+Same `MultiOmicsModel`, 5-fold StratifiedKFold (seed 42), v0.6 sizing. CNV is gene-level GISTIC2 restricted to the amplicon pole masks, z-scored. Reproduce: `python scripts/eval_ablation_real.py` (needs `dmoi-brca-poc` alongside for RNA/meth).
+
+| Axis | n | rna+meth AUROC | rna+meth+cnv AUROC | CNV Δ | CNV IG top-5 |
+|---|---|---|---|---|---|
+| HER2-vs-Luminal | 421 | 0.809 ± 0.118 | **0.934 ± 0.066** | **+0.125** | PGAP3, ERBB2, GRB7, MIEN1, STARD3 |
+| LumA-vs-LumB | 403 | 0.855 ± 0.030 | 0.848 ± 0.054 | −0.007 | PVT1, CASC8, MYC, POU5F1B, FGF19 |
+
+**Reading.** CNV adds real signal on the amplicon-driven **HER2** axis (+0.125 AUROC), and the CNV attribution lands squarely on the **17q12 ERBB2 amplicon** — every one of the top-5 attributed genes is a co-amplified 17q12 gene, exactly the biology HER2 is defined by. On **LumA-vs-LumB**, which is not amplicon-defined, CNV adds nothing (−0.007, within noise) — the honest null. The third modality helps where the biology says it should and not elsewhere; that per-axis honesty is the deliverable, not a uniform accuracy bump. (Synthetic-fixture demo: `scripts/run_ablation_synth.py`.)
+
 ## Substrate
 
 Each run appends to a hash-chained NDJSON audit trail; MLflow logging is a no-op unless a server is configured; a deterministic canary smoke runs in under a second. ruff + pytest + English-only checks gate every change.
