@@ -95,6 +95,17 @@ work can start from a known-good base.
 - [x] README v0.6 section
 - [ ] v0.6 tag + release notes
 
+## v0.7 — CNV port of the dmoi prior-vs-baseline comparison
+- [x] **Label-free amplicon prior vs top-variance** — `src/mocnv/compare_integration.py`
+  (amplicon-locus CNV prior selector + `eval_selector` with binary AUROC) +
+  `scripts/compare_cnv_prior.py` (`make compare-cnv`) → `audit/cnv_prior_vs_baseline.md`.
+  Ports the sibling dmoi-brca-poc finding to CNV: the label-free amplicon prior (ERBB2
+  17q12 + MYC/CCND1, 20 genes) beats top-variance on **HER2-vs-rest** (AUROC 0.830 vs
+  0.812 matched / 0.767 at k=100) with 5× fewer features, and still edges top-variance
+  on **LumA-vs-LumB** (0.728 vs 0.703) via the CCND1/MYC proliferation amplicon — sharp
+  where the amplicon defines the axis, weaker (but honest) off it. PAM50 labels reused
+  from dmoi-brca-poc. 6 unit tests; ruff + CI green.
+
 ---
 
 ## Why this sequence

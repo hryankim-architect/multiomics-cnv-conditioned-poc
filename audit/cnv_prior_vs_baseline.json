@@ -1,0 +1,70 @@
+{
+  "her2": {
+    "n": 831,
+    "classes": {
+      "Her2": 67,
+      "rest": 764
+    },
+    "n_prior_genes": 20,
+    "results": {
+      "CNV-prior(amplicon)": {
+        "n_features": 20,
+        "auroc": 0.8298932190960053,
+        "lr_weighted_f1": 0.9133329628150678,
+        "svc_weighted_f1": 0.9119759191304977,
+        "calinski_harabasz": 97.3597836885833,
+        "davies_bouldin": 1.5779063019131372
+      },
+      "top-variance(k=20)": {
+        "n_features": 20,
+        "auroc": 0.8115214979379066,
+        "lr_weighted_f1": 0.9064631782234107,
+        "svc_weighted_f1": 0.9116608076672419,
+        "calinski_harabasz": 164.76160303120955,
+        "davies_bouldin": 1.1861368587477805
+      },
+      "top-variance(k=100)": {
+        "n_features": 100,
+        "auroc": 0.7671279915474962,
+        "lr_weighted_f1": 0.9022900956356266,
+        "svc_weighted_f1": 0.9029264251400321,
+        "calinski_harabasz": 49.42057578605142,
+        "davies_bouldin": 2.130522186009545
+      }
+    }
+  },
+  "luminal": {
+    "n": 607,
+    "classes": {
+      "LumA": 415,
+      "LumB": 192
+    },
+    "n_prior_genes": 20,
+    "results": {
+      "CNV-prior(amplicon)": {
+        "n_features": 20,
+        "auroc": 0.7283352031608213,
+        "lr_weighted_f1": 0.7040921454713478,
+        "svc_weighted_f1": 0.712120382538395,
+        "calinski_harabasz": 32.46555377743335,
+        "davies_bouldin": 3.6004161043827674
+      },
+      "top-variance(k=20)": {
+        "n_features": 20,
+        "auroc": 0.5988130660292994,
+        "lr_weighted_f1": 0.6499745285517469,
+        "svc_weighted_f1": 0.6646498598261814,
+        "calinski_harabasz": 8.578711310236617,
+        "davies_bouldin": 6.630551022191547
+      },
+      "top-variance(k=100)": {
+        "n_features": 100,
+        "auroc": 0.7025982472399719,
+        "lr_weighted_f1": 0.715112055383414,
+        "svc_weighted_f1": 0.7119128970310876,
+        "calinski_harabasz": 14.583875082974386,
+        "davies_bouldin": 5.392975295370546
+      }
+    }
+  }
+}
