@@ -1,6 +1,6 @@
 [project]
 name = "multiomics-cnv-conditioned-poc"
-version = "0.0.0"
+version = "0.7.0"
 description = "Hypothesis-conditioned multi-omics with copy-number (CNV) as a third modality — an honest modality-ablation portrait."
 readme = "README.md"
 license = { text = "MIT" }
