@@ -105,6 +105,9 @@ work can start from a known-good base.
   on **LumA-vs-LumB** (0.728 vs 0.703) via the CCND1/MYC proliferation amplicon — sharp
   where the amplicon defines the axis, weaker (but honest) off it. PAM50 labels reused
   from dmoi-brca-poc. 6 unit tests; ruff + CI green.
+- [x] **Cross-omics synthesis** — one-page write-up across RNA, methylation, and CNV
+  (canonical in the sibling repo:
+  `dmoi-brca-poc/docs/multiomics-prior-vs-baseline.md`).
 
 ---
 
